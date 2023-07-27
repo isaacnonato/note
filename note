@@ -1,0 +1,29 @@
+#!/bin/zsh
+
+notes_location="$HOME/Documents/notes/"
+cd $notes_location
+
+case "$1" in 
+   "sync")
+      # TODO: add something to check if there are any unstaged modifications
+      # before pushing
+      git push
+      ;;
+   "dir") 
+      echo "$notes_location"
+      ;;
+   "")
+      nvim . +Ag
+      ;;
+   *) 
+      file="$(date +%d%m%y%S).md"
+      cp master.md $file
+      sed -i -e '3s/$/'" $(date +%d-%m-%y\ %H:%M)"'/' $file
+      sed -i -e '2s/$/'" \"$1\""'/' $file
+      sed -i -e '7s/$/'"# $1"'/' $file
+      nvim $file
+      git add $file
+      git commit -q -m "$1"
+     ;;
+esac
+cd -
